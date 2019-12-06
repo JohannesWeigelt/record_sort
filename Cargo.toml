@@ -1,7 +1,6 @@
 [package]
 name = "record_sort"
 version = "0.5.0"
-authors = ["jweigelt <johannes.weigelt@stud.htwk-leipzig.de>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
