@@ -7,6 +7,7 @@ use crate::sort::merge_sort::MergeSort;
 pub mod data;
 pub mod util;
 pub mod sort;
+pub mod benchmark;
 pub mod cli;
 
 fn main() {
