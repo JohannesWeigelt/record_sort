@@ -1,70 +1,63 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-use std::time::{Duration, Instant};
+use std::str::FromStr;
 
+use crate::benchmark::benchmark::Benchmark;
+use crate::benchmark::metering_result::MeteringResult;
+use crate::benchmark::real_data_benchmark::RealDataBenchmark;
+use crate::benchmark::simple_benchmark::SimpleBenchmark;
+use crate::cli::action::Action;
 use crate::data::reader::json_reader::JSONReader;
-use crate::data::reader::record_reader::RecordReader;
-use crate::sort::merge_sort::MergeSort;
-use crate::sort::sort::Sort;
+use crate::sort::sort_factory::SortFactory;
+use crate::util::random_number_generator::RandomNumberGenerator;
 
 pub struct ConsoleApplication {
-    review_reader: JSONReader,
-    review_sort: MergeSort,
+    sort_factory: SortFactory,
 }
 
 impl ConsoleApplication {
-    pub fn new(review_reader: JSONReader, review_sort: MergeSort) -> Self {
+    pub fn new(sort_factory: SortFactory) -> Self {
         ConsoleApplication {
-            review_reader,
-            review_sort,
+            sort_factory,
         }
     }
 
-    pub fn run(&self, path: &str, limit: Option<usize>, step: usize) {
-        let lines = match limit {
-            Some(n) => n,
-            None => {
-                println!("Count lines");
-                BufReader::new(File::open(path).unwrap()).lines().count()
+    pub fn run(&self, args: Vec<String>) {
+        let action = Action::from_str(args.get(1).unwrap()).unwrap();
+
+        match action {
+            Action::Simple => {
+                self.print_measurements(
+                    SimpleBenchmark::new(RandomNumberGenerator).execute(
+                        self.sort_factory.create(
+                            args.get(2).unwrap()
+                        ).unwrap()
+                    )
+                );
             }
-        };
 
-        self.print_measurements(self.measure_sort(path, step, lines));
-    }
-
-    fn measure_sort(&self, path: &str, step: usize, lines: usize) -> Vec<(usize, Duration)> {
-        let mut result = Vec::new();
-
-        let mut i = step;
-
-        while i <= lines {
-            result.push(self.sort_elements(path, Some(i)));
-            i += step
+            Action::Real => {
+                self.print_measurements(
+                    RealDataBenchmark::new(
+                        JSONReader,
+                        String::from("data_sets/foo_bar.json"),
+                        Some(10000000),
+                        100000
+                    ).execute(
+                        self.sort_factory.create(
+                            args.get(2).unwrap()
+                        ).unwrap()
+                    )
+                );
+            },
+            Action::Fake => unimplemented!(),
+            Action::Generate => unimplemented!()
         }
-
-        result
     }
 
-
-    fn sort_elements(&self, path: &str, limit: Option<usize>) -> (usize, Duration) {
-        let mut records = self.review_reader.read(path, limit).unwrap();
-        let len = records.len();
-        println!("Elements: {}", len);
-
-        let start = Instant::now();
-        self.review_sort.sort(&mut records);
-        let duration = start.elapsed();
-
-        println!("Duration: {:?}", duration);
-
-        (len, duration)
-    }
-
-    fn print_measurements(&self, measurements: Vec<(usize, Duration)>) {
+    fn print_measurements(&self, measurements: Vec<MeteringResult>) {
         println!("Results: ");
 
-        for (k, v) in measurements {
-            println!("Lines: {}, Duration: {:?}", k, v)
+        for result in measurements {
+            println!("Lines: {}, Duration: {} seconds", result.get_sorted_elements(), result.get_duration())
         }
     }
 }

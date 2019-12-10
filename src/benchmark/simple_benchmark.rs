@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
 use crate::benchmark::metering_result::MeteringResult;
@@ -24,10 +24,10 @@ impl Benchmark for SimpleBenchmark {
 
     fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<MeteringResult> {
         let mut result = Vec::new();
-        let mut values = self.rng.generate_u8_numbers(10000000);
+        let values = self.rng.generate_u8_numbers(10000000);
         let mut seconds_sum: f64 = 0.0;
 
-        for i in 0..self.times {
+        for _ in 0..self.times {
             let mut values_copy = values.clone();
 
             let start = Instant::now();

@@ -39,7 +39,7 @@ impl JSONReader {
 }
 
 impl RecordReader<Review> for JSONReader {
-    fn read(&self, path: &str, limit: Option<usize>) -> Result<Vec<Review>, &str> {
+    fn read(&self, path: &String, limit: Option<usize>) -> Result<Vec<Review>, &str> {
         let file = File::open(path).unwrap();
         let reader = BufReader::new(file);
 

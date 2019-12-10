@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 #[derive(Debug)]
 pub struct MeteringResult {
     sorted_elements: usize,

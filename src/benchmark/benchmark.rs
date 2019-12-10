@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::benchmark::metering_result::MeteringResult;
 use crate::sort::sort::Sort;
 

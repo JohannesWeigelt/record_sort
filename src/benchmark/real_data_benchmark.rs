@@ -9,14 +9,23 @@ use crate::data::reader::record_reader::RecordReader;
 use crate::data::review::Review;
 use crate::sort::sort::Sort;
 
-pub struct RealDataBenchmark<'a> {
+pub struct RealDataBenchmark {
     reader: JSONReader,
-    path: &'a str,
+    path: String,
     limit: Option<usize>,
     step: usize,
 }
 
-impl RealDataBenchmark<'_> {
+impl RealDataBenchmark {
+    pub fn new(reader: JSONReader, path: String, limit: Option<usize>, step: usize) -> Self {
+        RealDataBenchmark {
+            reader,
+            path,
+            limit,
+            step
+        }
+    }
+
     fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Vec<MeteringResult> {
         let mut result = Vec::new();
 
@@ -31,7 +40,7 @@ impl RealDataBenchmark<'_> {
     }
 
     fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> MeteringResult {
-        let mut records = self.reader.read(self.path, limit).unwrap();
+        let mut records = self.reader.read(&self.path, limit).unwrap();
         let len = records.len();
         println!("Elements: {}", len);
 
@@ -45,7 +54,7 @@ impl RealDataBenchmark<'_> {
     }
 }
 
-impl Benchmark for RealDataBenchmark<'_> {
+impl Benchmark for RealDataBenchmark {
     type Item = Review;
 
     fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<MeteringResult> {
@@ -53,7 +62,7 @@ impl Benchmark for RealDataBenchmark<'_> {
             Some(n) => n,
             None => {
                 println!("Count lines");
-                BufReader::new(File::open(self.path).unwrap()).lines().count()
+                BufReader::new(File::open(self.path.clone()).unwrap()).lines().count()
             }
         };
 

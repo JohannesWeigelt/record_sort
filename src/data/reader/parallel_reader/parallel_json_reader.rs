@@ -42,11 +42,11 @@ impl ParallelJSONReader {
 }
 
 impl RecordReader<Review> for ParallelJSONReader {
-    fn read(&self, path: &str, limit: Option<usize>) -> Result<Vec<Review>, &str> {
+    fn read(&self, path: &String, limit: Option<usize>) -> Result<Vec<Review>, &str> {
         let (tx, rx) = mpsc::channel::<IndexedPart>();
         let lines = match limit {
             Some(n) => n,
-            None => BufReader::new(File::open(path).unwrap()).lines().count()
+            None => BufReader::new(File::open(&path).unwrap()).lines().count()
         };
 
         let areas = split(self.threads, lines as u64).unwrap();
@@ -54,7 +54,7 @@ impl RecordReader<Review> for ParallelJSONReader {
         for i in 0usize..self.threads as usize {
             let sender = mpsc::Sender::clone(&tx);
             let area = *areas.get(i).unwrap();
-            let file_copy = File::open(path).unwrap();
+            let file_copy = File::open(&path).unwrap();
 
             thread::spawn(move || ParallelJSONReader::read_part(i, area, file_copy, sender));
         }
