@@ -1,11 +1,11 @@
-use std::str::FromStr;
+use std::convert::TryFrom;
 
 use crate::benchmark::benchmark::Benchmark;
 use crate::benchmark::metering_result::MeteringResult;
 use crate::benchmark::real_data_benchmark::RealDataBenchmark;
 use crate::benchmark::simple_benchmark::SimpleBenchmark;
 use crate::cli::action::Action;
-use crate::data::reader::json_reader::JSONReader;
+use crate::sort::algorithm::Algorithm;
 use crate::sort::sort_factory::SortFactory;
 use crate::util::random_number_generator::RandomNumberGenerator;
 
@@ -21,35 +21,39 @@ impl ConsoleApplication {
     }
 
     pub fn run(&self, args: Vec<String>) {
-        let action = Action::from_str(args.get(1).unwrap()).unwrap();
+        match Action::try_from(args.get(1)) {
+            Err(no_such_action_error) => println!("{}", no_such_action_error),
 
-        match action {
-            Action::Simple => {
+            Ok(action) => match action {
+                Action::Simple => self.simple(args),
+                Action::Real => self.real(args),
+                Action::Fake => unimplemented!(),
+                Action::Generate => unimplemented!()
+            }
+        }
+    }
+
+    fn simple(&self, args: Vec<String>) {
+        match Algorithm::try_from(args.get(2)) {
+            Err(no_such_algorithm_error) => println!("{}", no_such_algorithm_error),
+
+            Ok(algorithm) => {
                 self.print_measurements(
-                    SimpleBenchmark::new(RandomNumberGenerator).execute(
-                        self.sort_factory.create(
-                            args.get(2).unwrap()
-                        ).unwrap()
-                    )
+                    SimpleBenchmark::new(RandomNumberGenerator).execute(self.sort_factory.create(algorithm))
                 );
             }
+        }
+    }
 
-            Action::Real => {
+    fn real(&self, args: Vec<String>) {
+        match Algorithm::try_from(args.get(2)) {
+            Err(no_such_algorithm_error) => println!("{}", no_such_algorithm_error),
+
+            Ok(algorithm) => {
                 self.print_measurements(
-                    RealDataBenchmark::new(
-                        JSONReader,
-                        String::from("data_sets/foo_bar.json"),
-                        Some(10000000),
-                        100000
-                    ).execute(
-                        self.sort_factory.create(
-                            args.get(2).unwrap()
-                        ).unwrap()
-                    )
+                    RealDataBenchmark::default().execute(self.sort_factory.create(algorithm))
                 );
-            },
-            Action::Fake => unimplemented!(),
-            Action::Generate => unimplemented!()
+            }
         }
     }
 

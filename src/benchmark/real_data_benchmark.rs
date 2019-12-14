@@ -22,7 +22,16 @@ impl RealDataBenchmark {
             reader,
             path,
             limit,
-            step
+            step,
+        }
+    }
+
+    pub fn default() -> Self {
+        RealDataBenchmark {
+            reader: JSONReader,
+            path: String::from("data_sets/foo_bar.json"),
+            limit: Some(10000000),
+            step: 100000,
         }
     }
 
