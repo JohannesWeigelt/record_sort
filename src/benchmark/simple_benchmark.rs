@@ -1,7 +1,7 @@
 use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
-use crate::benchmark::metering_result::MeteringResult;
+use crate::benchmark::measurement::Measurement;
 use crate::sort::sort::Sort;
 use crate::util::random_number_generator::RandomNumberGenerator;
 
@@ -22,7 +22,7 @@ impl SimpleBenchmark {
 impl Benchmark for SimpleBenchmark {
     type Item = u8;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<MeteringResult> {
+    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<Measurement> {
         let mut result = Vec::new();
         let values = self.rng.generate_u8_numbers(10000000);
         let mut seconds_sum: f64 = 0.0;
@@ -35,7 +35,7 @@ impl Benchmark for SimpleBenchmark {
             seconds_sum += start.elapsed().as_secs_f64();
         }
 
-        result.push(MeteringResult::new(values.len(), seconds_sum / self.times as f64));
+        result.push(Measurement::new(values.len(), seconds_sum / self.times as f64));
         result
     }
 }

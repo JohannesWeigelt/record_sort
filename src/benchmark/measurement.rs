@@ -1,12 +1,12 @@
 #[derive(Debug)]
-pub struct MeteringResult {
+pub struct Measurement {
     sorted_elements: usize,
     duration: f64,
 }
 
-impl MeteringResult {
+impl Measurement {
     pub fn new(sorted_elements: usize, duration: f64) -> Self {
-        MeteringResult { sorted_elements, duration }
+        Measurement { sorted_elements, duration }
     }
 
     pub fn get_sorted_elements(&self) -> usize {

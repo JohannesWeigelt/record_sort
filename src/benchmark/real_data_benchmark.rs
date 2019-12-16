@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader};
 use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
-use crate::benchmark::metering_result::MeteringResult;
+use crate::benchmark::measurement::Measurement;
 use crate::data::reader::json_reader::JSONReader;
 use crate::data::reader::record_reader::RecordReader;
 use crate::data::review::Review;
@@ -35,7 +35,7 @@ impl RealDataBenchmark {
         }
     }
 
-    fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Vec<MeteringResult> {
+    fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Vec<Measurement> {
         let mut result = Vec::new();
 
         let mut i = self.step;
@@ -48,7 +48,7 @@ impl RealDataBenchmark {
         result
     }
 
-    fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> MeteringResult {
+    fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> Measurement {
         let mut records = self.reader.read(&self.path, limit).unwrap();
         let len = records.len();
         println!("Elements: {}", len);
@@ -59,14 +59,14 @@ impl RealDataBenchmark {
 
         println!("Duration: {} seconds", duration);
 
-        MeteringResult::new(len, duration)
+        Measurement::new(len, duration)
     }
 }
 
 impl Benchmark for RealDataBenchmark {
     type Item = Review;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<MeteringResult> {
+    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<Measurement> {
         let lines = match self.limit {
             Some(n) => n,
             None => {
