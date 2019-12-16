@@ -8,7 +8,7 @@ impl RandomNumberGenerator {
         let mut result = Vec::new();
         let mut rng = rand::thread_rng();
 
-        for _ in 0..size + 1 {
+        for _ in 0..size {
             result.push(rng.gen());
         }
 
