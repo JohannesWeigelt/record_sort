@@ -41,7 +41,7 @@ impl ParallelJSONReader {
     }
 }
 
-impl RecordReader<Review> for ParallelJSONReader {
+impl RecordReader for ParallelJSONReader {
     fn read(&self, path: &String, limit: Option<usize>) -> Result<Vec<Review>, &str> {
         let (tx, rx) = mpsc::channel::<IndexedPart>();
         let lines = match limit {
