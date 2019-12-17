@@ -8,7 +8,7 @@ use crate::data::reader::record_reader::RecordReader;
 pub struct JSONReader;
 
 impl JSONReader {
-    fn read_full<T: PartialOrd + DeserializeOwned>(&self, reader: BufReader<File>) -> Vec<T> {
+    fn read_full<T: PartialOrd + DeserializeOwned>(&self, reader: BufReader<&File>) -> Vec<T> {
         let mut reviews = Vec::new();
 
         for line in reader.lines() {
@@ -21,7 +21,7 @@ impl JSONReader {
         reviews
     }
 
-    fn read_limited<T: PartialOrd + DeserializeOwned>(&self, reader: BufReader<File>, mut limit: usize) -> Vec<T> {
+    fn read_limited<T: PartialOrd + DeserializeOwned>(&self, reader: BufReader<&File>, mut limit: usize) -> Vec<T> {
         let mut reviews = Vec::new();
 
         for line in reader.lines() {
@@ -40,9 +40,8 @@ impl JSONReader {
 }
 
 impl<T: PartialOrd + DeserializeOwned> RecordReader<T> for JSONReader {
-    fn read(&self, path: &String, limit: Option<usize>) -> Result<Vec<T>, String> {
-        let file = File::open(path).unwrap();
-        let reader = BufReader::new(file);
+    fn read(&self, path: &File, limit: Option<usize>) -> Result<Vec<T>, String> {
+        let reader = BufReader::new(path);
 
         Ok(
             match limit {

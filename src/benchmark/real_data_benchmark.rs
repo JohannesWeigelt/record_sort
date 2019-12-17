@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, Seek, SeekFrom};
 use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
@@ -42,19 +42,22 @@ impl RealDataBenchmark {
 
     fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Vec<Measurement> {
         let mut result = Vec::new();
+        let mut file = File::open(&self.path).unwrap();
 
         let mut i = self.step;
 
         while i <= lines {
-            result.push(self.sort_elements(sort, Some(i)));
+            result.push(self.sort_elements(&mut file, sort, Some(i)));
             i += self.step
         }
 
         result
     }
 
-    fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> Measurement {
-        let mut records = self.reader.read(&self.path, limit).unwrap();
+    fn sort_elements(&self, file: &mut File, sort: &dyn Sort<Review>, limit: Option<usize>) -> Measurement {
+        file.seek(SeekFrom::Start(0)).unwrap();
+
+        let mut records = self.reader.read(file, limit).unwrap();
         let len = records.len();
         println!("Elements: {}", len);
 
