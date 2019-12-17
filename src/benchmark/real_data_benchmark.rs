@@ -17,6 +17,11 @@ pub struct RealDataBenchmark {
 }
 
 impl RealDataBenchmark {
+    const DEFAULT_FILE: &'static str = "data_sets/Sports_and_Outdoors.json";
+    const DEFAULT_LIMIT: usize = 10000000;
+    const DEFAULT_STEP: usize = 500000;
+
+
     pub fn new(reader: JSONReader, path: String, limit: Option<usize>, step: usize) -> Self {
         RealDataBenchmark {
             reader,
@@ -29,9 +34,9 @@ impl RealDataBenchmark {
     pub fn default() -> Self {
         RealDataBenchmark {
             reader: JSONReader,
-            path: String::from("data_sets/foo_bar.json"),
-            limit: Some(10000000),
-            step: 100000,
+            path: String::from(RealDataBenchmark::DEFAULT_FILE),
+            limit: Some(RealDataBenchmark::DEFAULT_LIMIT),
+            step: RealDataBenchmark::DEFAULT_STEP,
         }
     }
 

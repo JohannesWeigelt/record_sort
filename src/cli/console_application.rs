@@ -9,14 +9,14 @@ use crate::sort::algorithm::Algorithm;
 use crate::sort::sort_factory::SortFactory;
 use crate::util::random_number_generator::RandomNumberGenerator;
 
-const ACTION_INDEX: usize = 1;
-const ALGORITHM_INDEX: usize = 2;
-
 pub struct ConsoleApplication {
     sort_factory: SortFactory,
 }
 
 impl ConsoleApplication {
+    const ACTION_INDEX: usize = 1;
+    const ALGORITHM_INDEX: usize = 2;
+
     pub fn new(sort_factory: SortFactory) -> Self {
         ConsoleApplication {
             sort_factory,
@@ -24,7 +24,7 @@ impl ConsoleApplication {
     }
 
     pub fn run(&self, args: Vec<String>) {
-        match Action::try_from(args.get(ACTION_INDEX)) {
+        match Action::try_from(args.get(ConsoleApplication::ACTION_INDEX)) {
             Err(no_such_action_error) => println!("{}", no_such_action_error),
 
             Ok(action) => match action {
@@ -37,7 +37,7 @@ impl ConsoleApplication {
     }
 
     fn simple(&self, args: Vec<String>) {
-        match Algorithm::try_from(args.get(ALGORITHM_INDEX)) {
+        match Algorithm::try_from(args.get(ConsoleApplication::ALGORITHM_INDEX)) {
             Err(no_such_algorithm_error) => println!("{}", no_such_algorithm_error),
 
             Ok(algorithm) => {
@@ -49,7 +49,7 @@ impl ConsoleApplication {
     }
 
     fn real(&self, args: Vec<String>) {
-        match Algorithm::try_from(args.get(ALGORITHM_INDEX)) {
+        match Algorithm::try_from(args.get(ConsoleApplication::ALGORITHM_INDEX)) {
             Err(no_such_algorithm_error) => println!("{}", no_such_algorithm_error),
 
             Ok(algorithm) => {
