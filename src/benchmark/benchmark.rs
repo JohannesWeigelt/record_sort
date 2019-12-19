@@ -1,3 +1,4 @@
+use crate::benchmark::benchmark_error::BenchmarkError;
 use crate::benchmark::measurement::Measurement;
 use crate::sort::sort::Sort;
 
@@ -5,5 +6,5 @@ use crate::sort::sort::Sort;
 pub trait Benchmark {
     type Item: PartialOrd;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<Measurement>;
+    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Result<Vec<Measurement>, BenchmarkError>;
 }

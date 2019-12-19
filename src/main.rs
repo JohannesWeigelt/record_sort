@@ -10,7 +10,7 @@ pub mod benchmark;
 pub mod cli;
 
 fn main() {
-    ConsoleApplication::new(SortFactory).run(env::args().collect());
+    ConsoleApplication::new(SortFactory).run_record_sort(env::args().collect());
 }
 
 

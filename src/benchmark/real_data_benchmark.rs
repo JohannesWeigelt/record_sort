@@ -3,6 +3,7 @@ use std::io::{BufRead, BufReader, Seek, SeekFrom};
 use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
+use crate::benchmark::benchmark_error::BenchmarkError;
 use crate::benchmark::measurement::Measurement;
 use crate::data::reader::json_reader::JSONReader;
 use crate::data::reader::record_reader::RecordReader;
@@ -32,32 +33,32 @@ impl RealDataBenchmark {
     }
 
     pub fn default() -> Self {
-        RealDataBenchmark {
-            reader: JSONReader,
-            path: String::from(RealDataBenchmark::DEFAULT_FILE),
-            limit: Some(RealDataBenchmark::DEFAULT_LIMIT),
-            step: RealDataBenchmark::DEFAULT_STEP,
-        }
+        RealDataBenchmark::new(
+            JSONReader,
+            String::from(RealDataBenchmark::DEFAULT_FILE),
+            Some(RealDataBenchmark::DEFAULT_LIMIT),
+            RealDataBenchmark::DEFAULT_STEP,
+        )
     }
 
-    fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Vec<Measurement> {
+    fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Result<Vec<Measurement>, BenchmarkError> {
         let mut result = Vec::new();
-        let mut file = File::open(&self.path).unwrap();
+        let mut file = File::open(&self.path)?;
 
         let mut i = self.step;
 
         while i <= lines {
-            result.push(self.sort_elements(&mut file, sort, Some(i)));
+            result.push(self.sort_elements(&mut file, sort, Some(i))?);
             i += self.step
         }
 
-        result
+        Ok(result)
     }
 
-    fn sort_elements(&self, file: &mut File, sort: &dyn Sort<Review>, limit: Option<usize>) -> Measurement {
-        file.seek(SeekFrom::Start(0)).unwrap();
+    fn sort_elements(&self, file: &mut File, sort: &dyn Sort<Review>, limit: Option<usize>) -> Result<Measurement, BenchmarkError> {
+        file.seek(SeekFrom::Start(0))?;
 
-        let mut records = self.reader.read(file, limit).unwrap();
+        let mut records = self.reader.read(file, limit)?;
         let len = records.len();
         println!("Elements: {}", len);
 
@@ -67,19 +68,19 @@ impl RealDataBenchmark {
 
         println!("Duration: {} seconds", duration);
 
-        Measurement::new(len, duration)
+        Ok(Measurement::new(len, duration))
     }
 }
 
 impl Benchmark for RealDataBenchmark {
     type Item = Review;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Vec<Measurement> {
+    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Result<Vec<Measurement>, BenchmarkError> {
         let lines = match self.limit {
             Some(n) => n,
             None => {
                 println!("Count lines");
-                BufReader::new(File::open(self.path.clone()).unwrap()).lines().count()
+                BufReader::new(File::open(self.path.clone())?).lines().count()
             }
         };
 
