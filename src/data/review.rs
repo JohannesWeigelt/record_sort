@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 
 use serde::{Deserialize, Serialize};
+use crate::data::record::Record;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Review {
@@ -18,6 +19,32 @@ pub struct Review {
     review_text: Option<String>,
     #[serde(rename = "unixReviewTime")]
     unix_review_time: u128,
+}
+
+impl Record for Review {}
+
+impl Review {
+    pub fn new(overall: f32,
+               verified: bool,
+               review_time: String,
+               reviewer_id: String,
+               asin: String,
+               style: Option<Style>,
+               reviewer_name: Option<String>,
+               review_text: Option<String>,
+               unix_review_time: u128) -> Self {
+        Review {
+            overall,
+            verified,
+            review_time,
+            reviewer_id,
+            asin,
+            style,
+            reviewer_name,
+            review_text,
+            unix_review_time,
+        }
+    }
 }
 
 impl PartialOrd for Review {
@@ -100,6 +127,12 @@ impl PartialEq for Review {
 pub struct Style {
     #[serde(rename = "Format:")]
     format: Option<String>
+}
+
+impl Style {
+    pub fn new(format: Option<String>) -> Self {
+        Style { format }
+    }
 }
 
 impl PartialOrd for Style {

@@ -43,22 +43,19 @@ impl RealDataBenchmark {
 
     fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Result<Vec<Measurement>, BenchmarkError> {
         let mut result = Vec::new();
-        let mut file = File::open(&self.path)?;
 
         let mut i = self.step;
 
         while i <= lines {
-            result.push(self.sort_elements(&mut file, sort, Some(i))?);
+            result.push(self.sort_elements(sort, Some(i))?);
             i += self.step
         }
 
         Ok(result)
     }
 
-    fn sort_elements(&self, file: &mut File, sort: &dyn Sort<Review>, limit: Option<usize>) -> Result<Measurement, BenchmarkError> {
-        file.seek(SeekFrom::Start(0))?;
-
-        let mut records = self.reader.read(file, limit)?;
+    fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> Result<Measurement, BenchmarkError> {
+        let mut records = self.reader.read(&self.path, limit)?;
         let len = records.len();
         println!("Elements: {}", len);
 
