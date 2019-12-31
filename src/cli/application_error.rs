@@ -4,6 +4,7 @@ use std::fmt::Formatter;
 
 use crate::benchmark::benchmark_error::BenchmarkError;
 use crate::cli::action::NoSuchActionError;
+use crate::data::record_io_error::RecordIOError;
 use crate::sort::algorithm::NoSuchAlgorithmError;
 
 #[derive(Debug)]
@@ -11,6 +12,7 @@ pub enum ApplicationError {
     NoSuchActionError(NoSuchActionError),
     NoSuchAlgorithmError(NoSuchAlgorithmError),
     BenchhmarkError(BenchmarkError),
+    RecordIOError(RecordIOError)
 }
 
 impl Error for ApplicationError {}
@@ -20,7 +22,8 @@ impl fmt::Display for ApplicationError {
         match self {
             ApplicationError::NoSuchActionError(e) => e.fmt(f),
             ApplicationError::NoSuchAlgorithmError(e) => e.fmt(f),
-            ApplicationError::BenchhmarkError(e) => e.fmt(f)
+            ApplicationError::BenchhmarkError(e) => e.fmt(f),
+            ApplicationError::RecordIOError(e) => e.fmt(f)
         }
     }
 }
@@ -40,6 +43,12 @@ impl From<NoSuchAlgorithmError> for ApplicationError {
 impl From<BenchmarkError> for ApplicationError {
     fn from(error: BenchmarkError) -> Self {
         ApplicationError::BenchhmarkError(error)
+    }
+}
+
+impl From<RecordIOError> for ApplicationError {
+    fn from(error: RecordIOError) -> Self {
+        ApplicationError::RecordIOError(error)
     }
 }
 

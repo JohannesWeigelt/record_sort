@@ -1,23 +1,24 @@
-use crate::data::generation::record_generator::RecordGenerator;
-use crate::data::review::{Review, Style};
+use rand::distributions::Alphanumeric;
 use rand::prelude::ThreadRng;
 use rand::Rng;
-use rand::distributions::Alphanumeric;
 
-pub struct ReviewGenerator<'a> {
-    rng: &'a mut ThreadRng,
+use crate::data::generation::record_generator::RecordGenerator;
+use crate::data::review::{Review, Style};
+
+pub struct ReviewGenerator {
+    rng: ThreadRng,
 }
 
-impl<'a> ReviewGenerator<'a> {
+impl ReviewGenerator {
     const MIN_OVERALL: f32 = 1.0;
     const MAX_OVERALL: f32 = 5.0;
 
     const MIN_STRING_SIZE: usize = 16;
     const MAX_STRING_SIZE: usize = 256;
 
-    pub fn new(rng: &'a mut ThreadRng) -> Self {
+    pub fn new() -> Self {
         ReviewGenerator {
-            rng,
+            rng: rand::thread_rng()
         }
     }
 
@@ -34,7 +35,7 @@ impl<'a> ReviewGenerator<'a> {
     }
 }
 
-impl<'a> RecordGenerator<Review> for ReviewGenerator<'a> {
+impl RecordGenerator<Review> for ReviewGenerator {
     fn generate(&mut self) -> Review {
         let overall: f32 = self.rng.gen_range(ReviewGenerator::MIN_OVERALL, ReviewGenerator::MAX_OVERALL);
         let verified: bool = self.rng.gen();

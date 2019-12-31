@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Seek, SeekFrom};
+use std::io::{BufRead, BufReader};
 use std::time::Instant;
 
 use crate::benchmark::benchmark::Benchmark;
@@ -19,6 +19,7 @@ pub struct RealDataBenchmark {
 
 impl RealDataBenchmark {
     const DEFAULT_FILE: &'static str = "data_sets/Sports_and_Outdoors.json";
+    const DEFAULT_GENERATED_FILE: &'static str = "data_sets/gen.json";
     const DEFAULT_LIMIT: usize = 10000000;
     const DEFAULT_STEP: usize = 500000;
 
@@ -36,6 +37,15 @@ impl RealDataBenchmark {
         RealDataBenchmark::new(
             JSONReader,
             String::from(RealDataBenchmark::DEFAULT_FILE),
+            Some(RealDataBenchmark::DEFAULT_LIMIT),
+            RealDataBenchmark::DEFAULT_STEP,
+        )
+    }
+
+    pub fn default_fake() -> Self {
+        RealDataBenchmark::new(
+            JSONReader,
+            String::from(RealDataBenchmark::DEFAULT_GENERATED_FILE),
             Some(RealDataBenchmark::DEFAULT_LIMIT),
             RealDataBenchmark::DEFAULT_STEP,
         )

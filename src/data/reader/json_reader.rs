@@ -3,15 +3,15 @@ use std::io::{BufRead, BufReader};
 
 use serde::de::DeserializeOwned;
 
-use crate::data::reader::record_read_error::RecordReadError;
 use crate::data::reader::record_reader::RecordReader;
 use crate::data::record::Record;
+use crate::data::record_io_error::RecordIOError;
 
 //Implementation of RecordReader. The JSONReader reads files, where every line is a valid JSON-Object
 pub struct JSONReader;
 
 impl JSONReader {
-    fn read_full<T: Record + DeserializeOwned>(&self, reader: BufReader<&File>) -> Result<Vec<T>, RecordReadError> {
+    fn read_full<T: Record + DeserializeOwned>(&self, reader: BufReader<&File>) -> Result<Vec<T>, RecordIOError> {
         let mut reviews = Vec::new();
 
         for line in reader.lines() {
@@ -24,12 +24,10 @@ impl JSONReader {
         Ok(reviews)
     }
 
-    fn read_limited<T: Record + DeserializeOwned>(&self, reader: BufReader<&File>, mut limit: usize) -> Result<Vec<T>, RecordReadError> {
+    fn read_limited<T: Record + DeserializeOwned>(&self, reader: BufReader<&File>, mut limit: usize) -> Result<Vec<T>, RecordIOError> {
         let mut reviews = Vec::new();
 
-        for line in reader.lines() {
-            if limit == 0 { break; }
-
+        for line in reader.lines().take(limit) {
             let json = line?;
             let review = serde_json::from_str(json.as_str())?;
 
@@ -43,7 +41,7 @@ impl JSONReader {
 }
 
 impl<T: Record + DeserializeOwned> RecordReader<T> for JSONReader {
-    fn read(&self, path: &String, limit: Option<usize>) -> Result<Vec<T>, RecordReadError> {
+    fn read(&self, path: &str, limit: Option<usize>) -> Result<Vec<T>, RecordIOError> {
         let file = &File::open(path)?;
         let reader = BufReader::new(file);
 
