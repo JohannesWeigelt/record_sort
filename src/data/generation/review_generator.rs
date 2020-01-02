@@ -10,6 +10,9 @@ pub struct ReviewGenerator {
 }
 
 impl ReviewGenerator {
+    const ASCII_ZERO: u8 = 48;
+    const ASCII_NINE_PLUS_ONE: u8 = 58;
+
     const MIN_OVERALL: f32 = 1.0;
     const MAX_OVERALL: f32 = 5.0;
 
@@ -37,13 +40,19 @@ impl ReviewGenerator {
         }
     }
 
+    fn generate_number_string(&mut self, len: usize) -> String {
+        let mut result = String::new();
+
+        for _ in 0..len {
+            result.push(char::from(self.rng.gen_range(ReviewGenerator::ASCII_ZERO, ReviewGenerator::ASCII_NINE_PLUS_ONE)))
+        }
+
+        result
+    }
+
     fn generate_string(&mut self, min: usize, max: usize) -> String {
         let len: usize = self.rng.gen_range(min, max);
         self.rng.sample_iter(&Alphanumeric).take(len).collect()
-    }
-
-    fn generate_string_fixed(&mut self, length: usize) -> String {
-        self.rng.sample_iter(&Alphanumeric).take(length).collect()
     }
 
     fn generate_optional_string(&mut self, min: usize, max: usize) -> Option<String> {
@@ -70,11 +79,11 @@ impl ReviewGenerator {
 
     fn generate_time(&mut self) -> String {
         let mut date = String::new();
-        date.push_str(self.generate_string_fixed(ReviewGenerator::DD_MM_LENGTH).as_str());
+        date.push_str(self.generate_number_string(ReviewGenerator::DD_MM_LENGTH).as_str());
         date.push_str(" ");
-        date.push_str(self.generate_string_fixed(ReviewGenerator::DD_MM_LENGTH).as_str());
+        date.push_str(self.generate_number_string(ReviewGenerator::DD_MM_LENGTH).as_str());
         date.push_str(", ");
-        date.push_str(self.generate_string_fixed(ReviewGenerator::YYYY_LENGTH).as_str());
+        date.push_str(self.generate_number_string(ReviewGenerator::YYYY_LENGTH).as_str());
 
         date
     }
