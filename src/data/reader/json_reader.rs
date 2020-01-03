@@ -53,4 +53,31 @@ impl<T: Record + DeserializeOwned> RecordReader<T> for JSONReader {
 }
 
 #[cfg(test)]
-mod test {}
+mod test {
+    use crate::data::reader::json_reader::JSONReader;
+    use crate::data::reader::record_reader::RecordReader;
+    use crate::data::review::Review;
+
+    const TEST_FILE: &'static str = "tests/data_sets/read_test.json";
+    const RECORDS: usize = 10;
+    const LIMIT: usize = 5;
+
+    #[test]
+    fn success_limited() {
+        let reader = JSONReader;
+        let limit = Some(LIMIT);
+
+        let result: Vec<Review> = reader.read(TEST_FILE, limit).unwrap();
+
+        assert_eq!(result.len(), LIMIT)
+    }
+
+    #[test]
+    fn success_unlimited() {
+        let reader = JSONReader;
+
+        let result: Vec<Review> = reader.read(TEST_FILE, None).unwrap();
+
+        assert_eq!(result.len(), RECORDS)
+    }
+}

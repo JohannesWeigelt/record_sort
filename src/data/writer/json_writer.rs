@@ -26,15 +26,30 @@ impl<T: Record + Serialize> RecordWriter<T> for JSONWriter {
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+    use std::fs::File;
+    use std::io::{BufRead, BufReader};
+    use std::path::Path;
+
     use crate::data::generation::review_generator::ReviewGenerator;
     use crate::data::writer::json_writer::JSONWriter;
     use crate::data::writer::record_writer::RecordWriter;
 
+    const TEST_FILE: &'static str = "tests/data_sets/write_test.json";
+    const RECORDS: usize = 10;
+
     #[test]
     fn success() {
-        //TODO Test with tmp-File and delete afterwards
+        assert!(!Path::new(TEST_FILE).exists());
 
         let writer = JSONWriter;
-        writer.write("data_sets/gen_test.json", &mut ReviewGenerator::new(), 10).unwrap();
+        writer.write(TEST_FILE, &mut ReviewGenerator::new(), RECORDS).unwrap();
+
+        let file = File::open(TEST_FILE).unwrap();
+        let lines = BufReader::new(file).lines().count();
+
+        assert_eq!(lines, RECORDS);
+
+        fs::remove_file(TEST_FILE).unwrap();
     }
 }
