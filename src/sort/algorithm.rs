@@ -2,11 +2,12 @@ use core::fmt;
 use std::convert::TryFrom;
 use std::fmt::Formatter;
 
-use crate::sort::algorithm::Algorithm::{Merge, Quick};
+use crate::sort::algorithm::Algorithm::{Merge, Quick, Insertion};
 
 pub enum Algorithm {
     Merge,
-    Quick
+    Quick,
+    Insertion
 }
 
 impl TryFrom<Option<&String>> for Algorithm {
@@ -19,6 +20,7 @@ impl TryFrom<Option<&String>> for Algorithm {
             Some(arg) => match arg.as_str() {
                 "merge" => Ok(Merge),
                 "quick" => Ok(Quick),
+                "insertion" => Ok(Insertion),
                 _ => Err(NoSuchAlgorithmError::new(String::from(arg)))
             }
         }
