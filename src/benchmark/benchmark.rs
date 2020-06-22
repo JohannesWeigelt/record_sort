@@ -6,5 +6,5 @@ use crate::sort::sort::Sort;
 pub trait Benchmark {
     type Item: PartialOrd;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Result<Vec<Measurement>, BenchmarkError>;
+    fn execute<T: Sort<Self::Item>>(&self, sort: &T) -> Result<Vec<Measurement>, BenchmarkError>;
 }

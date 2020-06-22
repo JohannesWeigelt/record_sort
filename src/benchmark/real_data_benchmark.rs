@@ -51,7 +51,7 @@ impl RealDataBenchmark {
         )
     }
 
-    fn measure_sort(&self, sort: &dyn Sort<Review>, lines: usize) -> Result<Vec<Measurement>, BenchmarkError> {
+    fn measure_sort<T: Sort<Review>>(&self, sort: &T, lines: usize) -> Result<Vec<Measurement>, BenchmarkError> {
         let mut result = Vec::new();
 
         let mut i = self.step;
@@ -64,7 +64,7 @@ impl RealDataBenchmark {
         Ok(result)
     }
 
-    fn sort_elements(&self, sort: &dyn Sort<Review>, limit: Option<usize>) -> Result<Measurement, BenchmarkError> {
+    fn sort_elements<T: Sort<Review>>(&self, sort: &T, limit: Option<usize>) -> Result<Measurement, BenchmarkError> {
         let mut records = self.reader.read(&self.path, limit)?;
         let len = records.len();
         println!("Elements: {}", len);
@@ -82,7 +82,7 @@ impl RealDataBenchmark {
 impl Benchmark for RealDataBenchmark {
     type Item = Review;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Result<Vec<Measurement>, BenchmarkError> {
+    fn execute<T: Sort<Self::Item>>(&self, sort: &T) -> Result<Vec<Measurement>, BenchmarkError> {
         let lines = match self.limit {
             Some(n) => n,
             None => {

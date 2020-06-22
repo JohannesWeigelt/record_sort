@@ -23,7 +23,7 @@ impl SimpleBenchmark {
 impl Benchmark for SimpleBenchmark {
     type Item = u8;
 
-    fn execute(&self, sort: &dyn Sort<Self::Item>) -> Result<Vec<Measurement>, BenchmarkError> {
+    fn execute<T: Sort<Self::Item>>(&self, sort: &T) -> Result<Vec<Measurement>, BenchmarkError> {
         let mut result = Vec::new();
         let values = self.rng.generate_u8_numbers(10000000);
         let mut seconds_sum: f64 = 0.0;

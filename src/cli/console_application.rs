@@ -12,6 +12,7 @@ use crate::data::writer::record_writer::RecordWriter;
 use crate::sort::algorithm::Algorithm;
 use crate::sort::sort_factory::SortFactory;
 use crate::util::random_number_generator::RandomNumberGenerator;
+use crate::sort::merge_sort::MergeSort;
 
 pub struct ConsoleApplication {
     sort_factory: SortFactory,
@@ -55,7 +56,7 @@ impl ConsoleApplication {
 
         Ok(
             self.print_measurements(
-                SimpleBenchmark::new(RandomNumberGenerator).execute(self.sort_factory.create(algorithm))?
+                SimpleBenchmark::new(RandomNumberGenerator).execute(&MergeSort)?
             )
         )
     }
@@ -65,7 +66,7 @@ impl ConsoleApplication {
 
         Ok(
             self.print_measurements(
-                RealDataBenchmark::default().execute(self.sort_factory.create(algorithm))?
+                RealDataBenchmark::default().execute(&MergeSort)?
             )
         )
     }
@@ -80,7 +81,7 @@ impl ConsoleApplication {
 
         Ok(
             self.print_measurements(
-                RealDataBenchmark::default_fake().execute(self.sort_factory.create(algorithm))?
+                RealDataBenchmark::default_fake().execute(&MergeSort)?
             )
         )
     }
